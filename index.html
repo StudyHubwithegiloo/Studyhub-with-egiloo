@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>StudyHub</title>
+<title>Studyhub-with-egiloo </title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#172033}
 header{background:#17365d;color:#fff;padding:25px;text-align:center}nav{background:#fff;padding:10px;text-align:center;position:sticky;top:0;z-index:5}
@@ -17,7 +17,7 @@ input,textarea,select{width:100%;padding:11px;margin:6px 0;border:1px solid #ccd
 </style>
 </head>
 <body>
-<header><h1>📚 StudyHub</h1><p>Teacher & Student Learning Portal</p></header>
+<header><h1>📚 Studyhub-with-egiloo</h1><p>Teacher & Student Learning Portal</p></header>
 
 <nav>
 <button class="navbtn" onclick="show('home')">Home</button>
@@ -30,7 +30,7 @@ input,textarea,select{width:100%;padding:11px;margin:6px 0;border:1px solid #ccd
 
 <main>
 <section id="home" class="box">
-<h2>Welcome to StudyHub 👋</h2>
+<h2>Welcome to Studyhub-with-egiloo 👋</h2>
 <p>Manage students, marks, attendance, homework and quizzes.</p>
 <div class="grid">
 <div class="card"><h2 id="studentCount">0</h2><p>Students</p></div>
@@ -112,7 +112,7 @@ function addQuestion(){
  question.value=optionA.value=optionB.value=optionC.value=optionD.value="";render();
 }
 function deleteStudent(i){students.splice(i,1);save();render();}
-function clearAll(){if(confirm("Delete all local StudyHub data?")){localStorage.clear();location.reload();}}
+function clearAll(){if(confirm("Delete all local Studyhub-with-egiloo data?")){localStorage.clear();location.reload();}}
 function render(){
  studentCount.textContent=students.length;homeworkCount.textContent=homework.length;quizCount.textContent=questions.length;
  studentList.innerHTML=students.length?students.map((s,i)=>`<div class="item"><b>👤 ${esc(s.name)}</b><p>Marks: ${s.marks}/${s.total}</p><b>Percentage: ${s.pct}%</b><br><button class="danger" onclick="deleteStudent(${i})">Delete</button></div>`).join(""):"<p>No students yet.</p>";
