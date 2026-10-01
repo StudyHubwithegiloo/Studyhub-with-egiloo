@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StudyHub</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#172033}
+header{background:#17365d;color:#fff;padding:25px;text-align:center}nav{background:#fff;padding:10px;text-align:center;position:sticky;top:0;z-index:5}
+button{border:0;border-radius:8px;padding:10px 14px;margin:4px;background:#245b9e;color:#fff;cursor:pointer}
+main{max-width:950px;margin:auto;padding:18px}.box{background:#fff;border-radius:14px;padding:20px;margin-bottom:18px;box-shadow:0 2px 10px #0001}
+input,textarea,select{width:100%;padding:11px;margin:6px 0;border:1px solid #ccd3df;border-radius:8px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.card{background:#eef3f9;padding:16px;border-radius:12px}
+.hidden{display:none}.item{background:#f5f7fa;padding:14px;margin:10px 0;border-radius:10px}
+.danger{background:#dc3545}.success{background:#198754}.dark{background:#172033}
+.small{color:#667085;font-size:14px}@media(max-width:650px){.grid{grid-template-columns:1fr}.navbtn{font-size:12px;padding:8px}}
+</style>
+</head>
+<body>
+<header><h1>📚 StudyHub</h1><p>Teacher & Student Learning Portal</p></header>
+
+<nav>
+<button class="navbtn" onclick="show('home')">Home</button>
+<button class="navbtn" onclick="show('teacher')">Teacher</button>
+<button class="navbtn" onclick="show('students')">Students</button>
+<button class="navbtn" onclick="show('attendance')">Attendance</button>
+<button class="navbtn" onclick="show('homework')">Homework</button>
+<button class="navbtn" onclick="show('quiz')">Quiz</button>
+</nav>
+
+<main>
+<section id="home" class="box">
+<h2>Welcome to StudyHub 👋</h2>
+<p>Manage students, marks, attendance, homework and quizzes.</p>
+<div class="grid">
+<div class="card"><h2 id="studentCount">0</h2><p>Students</p></div>
+<div class="card"><h2 id="homeworkCount">0</h2><p>Homework</p></div>
+<div class="card"><h2 id="quizCount">0</h2><p>Quiz Questions</p></div>
+</div>
+</section>
+
+<section id="teacher" class="box hidden">
+<h2>👨‍🏫 Teacher Dashboard</h2>
+<input id="studentName" placeholder="Student name">
+<input id="marks" type="number" placeholder="Marks obtained">
+<input id="total" type="number" placeholder="Total marks">
+<button class="success" onclick="addStudent()">+ Add Student</button>
+<hr>
+<h3>Teacher tools</h3>
+<p class="small">This demo stores data locally in this browser. It is not a real multi-user account system.</p>
+<button class="danger" onclick="clearAll()">Clear all local data</button>
+</section>
+
+<section id="students" class="box hidden">
+<h2>🎓 Student Records</h2><div id="studentList"></div>
+</section>
+
+<section id="attendance" class="box hidden">
+<h2>📅 Attendance</h2>
+<select id="attendanceStudent"><option value="">Select student</option></select>
+<select id="attendanceStatus"><option>Present</option><option>Absent</option></select>
+<button onclick="markAttendance()">Save Attendance</button>
+<div id="attendanceList"></div>
+</section>
+
+<section id="homework" class="box hidden">
+<h2>📝 Homework</h2>
+<input id="homeworkTitle" placeholder="Homework title">
+<textarea id="homeworkDescription" placeholder="Description"></textarea>
+<input id="homeworkDate" type="date">
+<button class="success" onclick="addHomework()">+ Add Homework</button>
+<div id="homeworkList"></div>
+</section>
+
+<section id="quiz" class="box hidden">
+<h2>🧠 Quiz Builder</h2>
+<input id="question" placeholder="Question">
+<input id="optionA" placeholder="Option A">
+<input id="optionB" placeholder="Option B">
+<input id="optionC" placeholder="Option C">
+<input id="optionD" placeholder="Option D">
+<select id="correct"><option>A</option><option>B</option><option>C</option><option>D</option></select>
+<button class="success" onclick="addQuestion()">+ Add Question</button>
+<div id="quizList"></div>
+</section>
+</main>
+
+<script>
+const get=k=>JSON.parse(localStorage.getItem(k)||"[]");
+let students=get("students"), homework=get("homework"), attendance=get("attendance"), questions=get("questions");
+const save=()=>{localStorage.setItem("students",JSON.stringify(students));localStorage.setItem("homework",JSON.stringify(homework));localStorage.setItem("attendance",JSON.stringify(attendance));localStorage.setItem("questions",JSON.stringify(questions));};
+
+function show(id){document.querySelectorAll("main>section").forEach(s=>s.classList.add("hidden"));document.getElementById(id).classList.remove("hidden");render();}
+function addStudent(){
+ let name=studentName.value.trim(), m=+marks.value, t=+total.value;
+ if(!name||t<=0||m<0||m>t)return alert("Enter valid student and marks.");
+ students.push({name,marks:m,total:t,pct:(m/t*100).toFixed(2)});save();
+ studentName.value=marks.value=total.value="";render();alert("Student added.");
+}
+function markAttendance(){
+ if(!attendanceStudent.value)return alert("Select a student.");
+ attendance.push({student:attendanceStudent.value,status:attendanceStatus.value,date:new Date().toLocaleDateString()});save();render();
+}
+function addHomework(){
+ if(!homeworkTitle.value.trim())return alert("Enter a homework title.");
+ homework.push({title:homeworkTitle.value.trim(),desc:homeworkDescription.value,date:homeworkDate.value});save();
+ homeworkTitle.value=homeworkDescription.value=homeworkDate.value="";render();
+}
+function addQuestion(){
+ if(!question.value.trim())return alert("Enter a question.");
+ questions.push({q:question.value,a:optionA.value,b:optionB.value,c:optionC.value,d:optionD.value,correct:correct.value});save();
+ question.value=optionA.value=optionB.value=optionC.value=optionD.value="";render();
+}
+function deleteStudent(i){students.splice(i,1);save();render();}
+function clearAll(){if(confirm("Delete all local StudyHub data?")){localStorage.clear();location.reload();}}
+function render(){
+ studentCount.textContent=students.length;homeworkCount.textContent=homework.length;quizCount.textContent=questions.length;
+ studentList.innerHTML=students.length?students.map((s,i)=>`<div class="item"><b>👤 ${esc(s.name)}</b><p>Marks: ${s.marks}/${s.total}</p><b>Percentage: ${s.pct}%</b><br><button class="danger" onclick="deleteStudent(${i})">Delete</button></div>`).join(""):"<p>No students yet.</p>";
+ attendanceStudent.innerHTML='<option value="">Select student</option>'+students.map(s=>`<option>${esc(s.name)}</option>`).join("");
+ attendanceList.innerHTML=attendance.map(a=>`<div class="item"><b>${esc(a.student)}</b> — ${a.status}<br><span class="small">${a.date}</span></div>`).join("");
+ homeworkList.innerHTML=homework.map(h=>`<div class="item"><h3>📖 ${esc(h.title)}</h3><p>${esc(h.desc)}</p><span class="small">Due: ${h.date||"No date"}</span></div>`).join("");
+ quizList.innerHTML=questions.map((q,i)=>`<div class="item"><b>${i+1}. ${esc(q.q)}</b><p>A) ${esc(q.a)}</p><p>B) ${esc(q.b)}</p><p>C) ${esc(q.c)}</p><p>D) ${esc(q.d)}</p><b>Correct: ${q.correct}</b></div>`).join("");
+}
+function esc(x){return String(x).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
+render();
+</script>
+</body>
+</html>
